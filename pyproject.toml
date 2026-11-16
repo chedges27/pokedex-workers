@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pokedex-workers"
+dynamic = ["version"]
+description = "RQ workers that run pokedex scrape pipelines, track them in Postgres, and upload CSV output to S3"
+readme = "README.md"
+requires-python = ">=3.14.0"
+authors = [
+    { name = "Cory Hedges", email = "cory.hedges@gmail.com" },
+]
+dependencies = [
+    "alembic>=1.16",
+    "boto3>=1.35",
+    "pokedex-scrapers @ git+https://github.com/chedges27/pokedex-scrapers.git@v0.4.0",
+    "psycopg[binary]>=3.2",
+    "pydantic-settings>=2.15",
+    "pyyaml>=6.0",
+    "redis>=5.2",
+    "rq>=2.1",
+    "rq-dashboard>=0.8",
+    "sqlalchemy>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "fakeredis>=2.26",
+    "pytest>=9.1",
+]
+
+[project.scripts]
+pokedex-workers = "pokedex_workers.cli:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+fallback_version = "0.0.0"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pokedex_workers"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
